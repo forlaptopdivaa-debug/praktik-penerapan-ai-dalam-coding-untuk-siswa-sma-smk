@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KasKita - Aplikasi Transparansi Uang Kas Kelas</title>
+    
+    <!-- Meta Tags SEO & Open Graph -->
+    <meta name="description" content="Aplikasi pencatatan dan transparansi uang kas kelas praktis untuk siswa SMA/SMK.">
+    <meta name="theme-color" content="#0D9488">
+
+    <!-- CSS / Style Interaktif -->
+    <style>
+        /* Modern CSS Variables & Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        :root {
+            --primary: #0D9488;
+            --primary-dark: #0F766E;
+            --primary-light: #CCFBF1;
+            --bg-color: #F3F4F6;
+            --card-bg: #FFFFFF;
+            --text-main: #1F2937;
+            --text-muted: #6B7280;
+            --danger: #EF4444;
+            --danger-light: #FEE2E2;
+            --success: #10B981;
+            --success-light: #D1FAE5;
+            --border: #E5E7EB;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding-bottom: 3rem;
+        }
+
+        /* HEADER */
+        header {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+
+        header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        header p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        /* MAIN CONTAINER */
+        .container {
+            max-width: 1000px;
+            margin: -1.5rem auto 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* DASHBOARD SUMMARY CARDS */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-stat {
+            background: var(--card-bg);
+            padding: 1.25rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--primary);
+            transition: transform 0.2s ease;
+        }
+
+        .card-stat:hover {
+            transform: translateY(-2px);
+        }
+
+        .card-stat.in { border-left-color: var(--success); }
+        .card-stat.out { border-left-color: var(--danger); }
+
+        .card-stat h3 {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-stat .amount {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-top: 0.4rem;
+        }
+
+        /* CONTENT LAYOUT GRID */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.6fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* CARDS */
+        .card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+        }
+
+        .card h2 {
+            font-size: 1.2rem;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* FORM CONTROLS */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            color: var(--text-main);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.75rem 0.9rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+        }
+
+        /* BUTTONS */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            padding: 0.75rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-wa {
+            background-color: #25D366;
+            margin-top: 0.8rem;
+        }
+
+        .btn-wa:hover {
+            background-color: #1DA851;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            width: auto;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+        }
+
+        .btn-outline:hover {
+            background-color: #F9FAFB;
+        }
+
+        /* CONTROLS (SEARCH & FILTER) */
+        .filter-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .filter-controls input {
+            flex: 2;
+        }
+
+        .filter-controls select {
+            flex: 1;
+        }
+
+        /* TRANSACTION LIST */
+        .tx-list {
+            list-style: none;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 0.3rem;
+        }
+
+        .tx-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.9rem;
+            border-radius: 8px;
+            background-color: #FAFAFA;
+            border: 1px solid var(--border);
+            margin-bottom: 0.6rem;
+            transition: background-color 0.2s;
+        }
+
+        .tx-item:hover {
+            background-color: #F3F4F6;
+        }
+
+        .tx-info .title {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .tx-info .date {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.1rem;
+        }
+
+        .tx-right {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .tx-amount {
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .tx-amount.masuk {
+            color: var(--success);
+        }
+
+        .tx-amount.keluar {
+            color: var(--danger);
+        }
+
+        .btn-delete {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0.2rem;
+            border-radius: 4px;
+            transition: color 0.2s;
+        }
+
+        .btn-delete:hover {
+            color: var(--danger);
+        }
+
+        /* FOOTER & UTILITIES */
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 2rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .action-bar .btn {
+            font-size: 0.8rem;
+            padding: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER APLIKASI -->
+    <header>
+        <h1>💰 KasKita</h1>
+        <p>Aplikasi Transparansi Uang Kas Kelas & Organisasi Sekolah</p>
+    </header>
+
+    <div class="container">
+        <!-- DASHBOARD SALDO & REKAP -->
+        <div class="dashboard">
+            <div class="card-stat">
+                <h3>Total Saldo Kas</h3>
+                <div class="amount" id="totalBalance">Rp 0</div>
+            </div>
+            <div class="card-stat in">
+                <h3>Total Pemasukan</h3>
+                <div class="amount" id="totalIncome" style="color: var(--success);">Rp 0</div>
+            </div>
+            <div class="card-stat out">
+                <h3>Total Pengeluaran</h3>
+                <div class="amount" id="totalExpense" style="color: var(--danger);">Rp 0</div>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <!-- FORM INPUT TRANSAKSI -->
+            <div class="card">
+                <h2>➕ Catat Transaksi</h2>
+                <form id="txForm">
+                    <div class="form-group">
+                        <label for="txType">Jenis Transaksi</label>
+                        <select id="txType" required>
+                            <option value="masuk">🟢 Kas Masuk (Pemasukan)</option>
+                            <option value="keluar">🔴 Kas Keluar (Pengeluaran)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txTitle">Keterangan / Nama Siswa</label>
+                        <input type="text" id="txTitle" placeholder="Contoh: Uang Kas Budi / Beli Spidol" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txAmount">Nominal (Rp)</label>
+                        <input type="number" id="txAmount" placeholder="Contoh: 5000" min="1" required>
+                    </div>
+
+                    <button type="submit" class="btn">💾 Simpan Transaksi</button>
+                </form>
+
+                <hr style="margin: 1.2rem 0; border: 0; border-top: 1px solid var(--border);">
+
+                <!-- BAGIKAN KE WHATSAPP -->
+                <button class="btn btn-wa" onclick="shareToWhatsApp()">
+                    📲 Bagikan Rekap ke WA Kelas
+                </button>
+
+                <!-- AKSI EKSPOR & CLEAR DATA -->
+                <div class="action-bar">
+                    <button class="btn btn-outline" style="flex:1;" onclick="exportData()">📥 Cadangan (JSON)</button>
+                    <button class="btn btn-outline" style="flex:1; color: var(--danger);" onclick="resetData()">🗑️ Hapus Semua</button>
+                </div>
+            </div>
+
+            <!-- RIWAYAT & DAFTAR TRANSAKSI -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>📜 Riwayat Kas</h2>
+                    <span id="txCount" style="font-size: 0.8rem; background: var(--primary-light); color: var(--primary-dark); padding: 0.2rem 0.6rem; border-radius: 999px; font-weight: 600;">0 Transaksi</span>
+                </div>
+
+                <!-- FILTER & PENCARIAN -->
+                <div class="filter-controls">
+                    <input type="text" id="searchInput" placeholder="🔍 Cari transaksi..." oninput="renderUI()">
+                    <select id="filterType" onchange="renderUI()">
+                        <option value="all">Semua</option>
+                        <option value="masuk">Pemasukan</option>
+                        <option value="keluar">Pengeluaran</option>
+                    </select>
+                </div>
+
+                <!-- LIST TRANSAKSI -->
+                <ul class="tx-list" id="txList">
+                    <!-- Data dimuat dinamis oleh JavaScript -->
+                </ul>
+            </div>
+        </div>
+
+        <footer>
+            <p><strong>KasKita App</strong> &copy; 2026 - Dibuat untuk Transparansi Kelas XI SMK/SMA | Hosted on GitHub Pages</p>
+        </footer>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Key LocalStorage
+        const STORAGE_KEY = 'kaskita_db_v1';
+
+        // Load Data dari LocalStorage saat pertama dibuka
+        let transactions = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [
+            { id: 1, type: 'masuk', title: 'Saldo Awal Kas Kelas', amount: 50000, date: '15 Okt 2026' },
+            { id: 2, type: 'masuk', title: 'Uang Kas - Budi Santoso', amount: 5000, date: '16 Okt 2026' },
+            { id: 3, type: 'keluar', title: 'Beli Isi Ulang Spidol Boardmarker', amount: 12000, date: '18 Okt 2026' }
+        ];
+
+        // Format Angka ke Rupiah
+        function formatRupiah(number) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                maximumFractionDigits: 0
+            }).format(number);
+        }
+
+        // Render tampilan UI
+        function renderUI() {
+            const txList = document.getElementById('txList');
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const filterType = document.getElementById('filterType').value;
+            
+            txList.innerHTML = '';
+
+            let income = 0;
+            let expense = 0;
+
+            // Hitung Total Seluruh Transaksi
+            transactions.forEach(tx => {
+                const amt = parseInt(tx.amount);
+                if (tx.type === 'masuk') income += amt;
+                else expense += amt;
+            });
+
+            // Filter Data untuk Tampilan
+            const filteredTx = transactions.filter(tx => {
+                const matchesSearch = tx.title.toLowerCase().includes(searchInput);
+                const matchesFilter = filterType === 'all' || tx.type === filterType;
+                return matchesSearch && matchesFilter;
+            });
+
+            document.getElementById('txCount').innerText = `${filteredTx.length} Transaksi`;
+
+            if (filteredTx.length === 0) {
+                txList.innerHTML = '<div class="empty-state">Belum ada transaksi yang sesuai.</div>';
+            } else {
+                filteredTx.forEach(tx => {
+                    const isMasuk = tx.type === 'masuk';
+                    const item = document.createElement('li');
+                    item.className = 'tx-item';
+
+                    item.innerHTML = `
+                        <div class="tx-info">
+                            <div class="title">${escapeHtml(tx.title)}</div>
+                            <div class="date">📅 ${tx.date}</div>
+                        </div>
+                        <div class="tx-right">
+                            <span class="tx-amount ${tx.type}">
+                                ${isMasuk ? '+' : '-'} ${formatRupiah(tx.amount)}
+                            </span>
+                            <button class="btn-delete" onclick="deleteTx(${tx.id})" title="Hapus Transaksi">🗑️</button>
+                        </div>
+                    `;
+                    txList.appendChild(item);
+                });
+            }
+
+            // Update Statistik Dashboard
+            const balance = income - expense;
+            document.getElementById('totalBalance').innerText = formatRupiah(balance);
+            document.getElementById('totalIncome').innerText = formatRupiah(income);
+            document.getElementById('totalExpense').innerText = formatRupiah(expense);
+
+            // Simpan perubahan ke LocalStorage
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
+        }
+
+        // Mencegah XSS Attack pada input teks
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        // Tambah Transaksi Baru
+        document.getElementById('txForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const type = document.getElementById('txType').value;
+            const title = document.getElementById('txTitle').value.trim();
+            const amount = parseInt(document.getElementById('txAmount').value);
+            
+            const today = new Date().toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+            });
+
+            const newTx = {
+                id: Date.now(),
+                type: type,
+                title: title,
+                amount: amount,
+                date: today
+            };
+
+            transactions.unshift(newTx);
+            renderUI();
+
+            // Reset Form
+            document.getElementById('txTitle').value = '';
+            document.getElementById('txAmount').value = '';
+        });
+
+        // Hapus Transaksi Berdasarkan ID
+        function deleteTx(id) {
+            if (confirm("Apakah Anda yakin ingin menghapus catatan transaksi ini?")) {
+                transactions = transactions.filter(tx => tx.id !== id);
+                renderUI();
+            }
+        }
+
+        // Fitur WhatsApp Share API
+        function shareToWhatsApp() {
+            if (transactions.length === 0) {
+                alert("Belum ada data transaksi untuk dibagikan!");
+                return;
+            }
+
+            let income = 0;
+            let expense = 0;
+            transactions.forEach(tx => {
+                if (tx.type === 'masuk') income += parseInt(tx.amount);
+                else expense += parseInt(tx.amount);
+            });
+
+            const balance = income - expense;
+
+            let text = `*📢 REKAP KAS KELAS (KasKita)*\n`;
+            text += `-----------------------------------\n`;
+            text += `💰 *Saldo Kas Saat Ini:* ${formatRupiah(balance)}\n`;
+            text += `📥 Total Pemasukan: ${formatRupiah(income)}\n`;
+            text += `📤 Total Pengeluaran: ${formatRupiah(expense)}\n\n`;
+            text += `*3 Transaksi Terakhir:*\n`;
+
+            const recent = transactions.slice(0, 3);
+            recent.forEach(tx => {
+                const icon = tx.type === 'masuk' ? '🟢' : '🔴';
+                text += `${icon} ${tx.title}:${formatRupiah(tx.amount)}\n`;
+            });
+
+            text += `\n_Laporan ini dibuat otomatis menggunakan aplikasi KasKita._`;
+
+            const encodedText = encodeURIComponent(text);
+            window.open(`https://wa.me/?text=${encodedText}`, '_blank');
+        }
+
+        // Ekspor Cadangan Data (JSON)
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(transactions, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `kaskita_backup_${Date.now()}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        // Hapus Seluruh Data
+        function resetData() {
+            if (confirm("⚠️ PERINGATAN! Seluruh data kas akan dihapus dari browser ini. Lanjutkan?")) {
+                transactions = [];
+                renderUI();
+            }
+        }
+
+        // Jalankan render awal saat halaman terbuka
+        renderUI();
+    </script>
+</body>
+</html>
